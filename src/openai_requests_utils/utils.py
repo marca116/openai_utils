@@ -4,6 +4,7 @@ import os
 import time
 from datetime import datetime
 import tiktoken
+import re
 
 def read_json(filename):
     nb_retry = 0
@@ -286,3 +287,38 @@ def count_tokens(messages):
     num_tokens += 3
     #print(f"{num_tokens} tokens")
     return num_tokens
+
+# Return last json object contained in the response_content
+def extract_json_from_response(func_name, response_content):
+    try:
+        # Use regular expression to find potential JSON objects
+            # The regex also captures JSON content that might not have a closing brace.
+        matches = re.findall(r'\{.*\}|\{.*$', response_content, re.MULTILINE | re.DOTALL) # Just need to detect everything in {} as a json object, json_mode should only output valid json (I think)
+        
+        if matches:
+            modified_response = matches[-1]
+
+            # Calculate number of missing closing braces and append them
+            missing_closing_braces = modified_response.count('{') - modified_response.count('}')
+            if missing_closing_braces > 0:
+                modified_response += '}' * missing_closing_braces
+
+            # Replace "true/false" with "false", in case the JSON object contains "true/false" as a string (error when created it)
+            modified_response = re.sub(r'(?i)["\']?true/false["\']?', 'false', modified_response) 
+
+            # Convert all instances of "True" and "False" (case insensitive) to True and False
+            modified_response = re.sub(r'(?i)["\']?true["\']?', 'true', re.sub(r'(?i)["\']?false["\']?', 'false', modified_response))
+            
+            # Replace N/A with "N/A" if it appears after a colon and optional whitespaces, case-insensitive
+            modified_response = re.sub(r'(?i)(:\s*)N/A', r'\1"N/A"', modified_response)
+
+            # Remove trailing commas right before ] or }
+            modified_response = re.sub(r',\s*([}\]])', r'\1', modified_response)
+
+            return json.loads(modified_response)
+        else:
+            print(f'Error in {func_name}: No potential JSON object found in the text. {response_content}')
+            return None
+    except json.JSONDecodeError as e:
+        print(f'Error in {func_name}: The text does not contain a valid JSON object. {response_content}. Error : {str(e)}')
+        return None
