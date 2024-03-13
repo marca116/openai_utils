@@ -115,7 +115,7 @@ def oai_call_stream(model, messages, max_response_length, timeout, temperature, 
     for byte_data in response.iter_content():
         if is_first_byte:
             is_first_byte = False
-            print(f"First byte received at time: {time.time() - start_time}")
+            #print(f"First byte received at time: {time.time() - start_time}")
 
         byte_buffer += byte_data
 
@@ -192,7 +192,7 @@ def oai_call_stream(model, messages, max_response_length, timeout, temperature, 
     oai_call_log["completion_tokens"] = count_tokens([response_msg_oai]) 
     oai_call_log["total_tokens"] = oai_call_log["prompt_tokens"] + oai_call_log["completion_tokens"]
 
-    print(f"Response received from OAI in {time.time() - start_time}s, model used: {model}")
+    #print(f"Response received from OAI in {time.time() - start_time}s, model used: {model}")
 
     return oai_call_log, response_msg_oai
 
