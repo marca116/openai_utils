@@ -152,7 +152,7 @@ def oai_call_stream(model, messages, max_response_length, timeout, temperature, 
             if is_first_chunk:
                 role = chunk_message.get("role", None)
                 is_first_chunk = False
-                print(f"First chunk received at time: {time.time() - start_time}")
+                # print(f"First chunk received at time: {time.time() - start_time}")
 
             # Add the chunk data to the log
             oai_call_log["chunks"].append({
@@ -250,7 +250,7 @@ def send_open_ai_gpt_message(messages_arg, no_gen = None, json_mode = False):
             print(f"Max immediate retry reached, trying again in {wait_time_until_no_response_retry} secs.")
             time.sleep(wait_time_until_no_response_retry)
 
-    print(f"Response received from OAI in {time.time() - start_time_call_oai}s, model used: {model}")
+    # print(f"Response received from OAI in {time.time() - start_time_call_oai}s, model used: {model}")
 
     # Debug calls
     suffix = f"{no_gen}_" if no_gen is not None else ""
