@@ -196,7 +196,6 @@ def oai_call_stream(model, messages, max_response_length, timeout, temperature, 
 
     return oai_call_log, response_msg_oai
 
-
 # Send msg to openai
 def send_open_ai_gpt_message(messages_arg, no_gen = None, json_mode = False):
     # create config file if it doesn't exist already
@@ -253,13 +252,13 @@ def send_open_ai_gpt_message(messages_arg, no_gen = None, json_mode = False):
     # print(f"Response received from OAI in {time.time() - start_time_call_oai}s, model used: {model}")
 
     # Debug calls
-    suffix = f"{no_gen}_" if no_gen is not None else ""
+    suffix = f"_{no_gen}" if no_gen is not None else ""
 
     # Create current_convo_debug directory if it doesn't exist already
     if not os.path.exists('current_convo_debug'):
         os.makedirs('current_convo_debug')
 
-    filename = f'{datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3]}_{suffix}' # Filename including the nb of ms (otherwise filename might be overwritten)
+    filename = f'{datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3]}{suffix}' # Filename including the nb of ms (otherwise filename might be overwritten)
     with open(f'current_convo_debug/{filename}.json', 'w', encoding="utf-8") as f:
         formatted_data = json.dumps(oai_call_log, ensure_ascii=False, indent=4)
         f.write(formatted_data)
