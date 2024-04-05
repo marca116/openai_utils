@@ -68,6 +68,9 @@ def oai_call_stream(model, messages, max_response_length, timeout, temperature, 
 
     response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, data=encoded_params, timeout=timeout, stream=True)
 
+    if response.status_code != 200:
+        raise Exception(f"Error in OAI call: {response.status_code} - {response.text}")
+
     # Dictionary to hold the log data
     oai_call_log = {
         "id": "",
